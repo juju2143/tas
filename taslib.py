@@ -89,6 +89,12 @@ def mUpHere(delay=0):
 def mClickHere(delay=0, reps=1):
 	posx, posy = mCurPos()
 	mClick(posx, posy, delay, reps)
+def mHoldHere(delay=0, reps=1):
+	posx, posy = mCurPos()
+	for i in range(0,reps):
+		mDown(posx, posy)
+		sleep(delay)
+		mUp(posx, posy)
 def kEvent(key, isDown):
 	theEvent = CGEventCreateKeyboardEvent(None, key, isDown)
 	CGEventPost(kCGHIDEventTap, theEvent)
