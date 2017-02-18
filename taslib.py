@@ -34,7 +34,10 @@ def keyCodeFromString(keyString):
 		"pgdn": 121,"f1": 122,"left": 123,"right": 124,"down": 125,
 		"up": 126,
 	}
-	return keys[keyString]
+	try:
+		return keys[keyString]
+	except:
+		return None
 def openAndWait(app, process, window):
 	call(["open",app])
 	dprint(process + " opened, waiting for window...")
@@ -51,50 +54,55 @@ def openAndWait(app, process, window):
 	#stdout, stderr = p.communicate(scpt)
 	applescript.AppleScript(scpt).run(process, window)
 	dprint("done.")
-def mEvent(type, posx, posy):
-	theEvent = CGEventCreateMouseEvent(None, type, (posx,posy), kCGMouseButtonLeft)
+def isPointVisible(x, y):
+	_,dspys,_ = CGGetDisplaysWithPoint((x,y),0,None,None)
+	return len(dspys)>0
+def mEvent(type, posx, posy, btn=0):
+	theEvent = CGEventCreateMouseEvent(None, type, (posx,posy), btn)
 	CGEventPost(kCGHIDEventTap, theEvent)
 #	CFRelease(theEvent)
 def mMove(posx, posy, delay=0):
 	mEvent(kCGEventMouseMoved, posx, posy)
 	dprint("mouse moved")
 	sleep(delay)
-def mDown(posx, posy, delay=0):
-	mEvent(kCGEventLeftMouseDown, posx, posy)
+def mDown(posx, posy, delay=0, btn=0):
+	if btn<2:
+		mEvent([kCGEventLeftMouseDown,kCGEventRightMouseDown][btn], posx, posy)
+	else:
+		mEvent(kCGEventOtherMouseDown, posx, posy, btn)
 	dprint("mouse down")
 	sleep(delay)
-def mUp(posx, posy, delay=0):
-	mEvent(kCGEventLeftMouseUp, posx, posy)
+def mUp(posx, posy, delay=0, btn=0):
+	if btn<2:
+		mEvent([kCGEventLeftMouseUp,kCGEventRightMouseUp][btn], posx, posy)
+	else:
+		mEvent(kCGEventOtherMouseUp, posx, posy, btn)
 	dprint("mouse up")
 	sleep(delay)
-def mClick(posx, posy, delay=0, reps=1):
+def mClick(posx, posy, delay=0, reps=1, btn=0):
 	for i in range(0,reps):
-		mDown(posx, posy)
-		mUp(posx, posy)
+		mDown(posx, posy, 0, btn)
+		mUp(posx, posy, 0, btn)
 		sleep(delay)
-def mHold(posx, posy, delay=0, reps=1):
+def mHold(posx, posy, delay=0, reps=1, btn=0):
 	for i in range(0,reps):
-		mDown(posx, posy)
-		sleep(delay)
-		mUp(posx, posy)
+		mDown(posx, posy, delay, btn)
+		mUp(posx, posy, 0, btn)
 def mCurPos():
 	theEvent = CGEventCreate(None)
 	return CGEventGetLocation(theEvent)
-def mDownHere(delay=0):
+def mDownHere(delay=0, btn=0):
 	posx, posy = mCurPos()
-	mDown(posx, posy, delay)
-def mUpHere(delay=0):
+	mDown(posx, posy, delay, btn)
+def mUpHere(delay=0, btn=0):
 	posx, posy = mCurPos()
-	mUp(posx, posy, delay)
-def mClickHere(delay=0, reps=1):
+	mUp(posx, posy, delay, btn)
+def mClickHere(delay=0, reps=1, btn=0):
 	posx, posy = mCurPos()
-	mClick(posx, posy, delay, reps)
-def mHoldHere(delay=0, reps=1):
+	mClick(posx, posy, delay, reps, btn)
+def mHoldHere(delay=0, reps=1, btn=0):
 	posx, posy = mCurPos()
-	for i in range(0,reps):
-		mDown(posx, posy)
-		sleep(delay)
-		mUp(posx, posy)
+	mHold(posx, posy, delay, reps, btn)
 def kEvent(key, isDown):
 	theEvent = CGEventCreateKeyboardEvent(None, key, isDown)
 	CGEventPost(kCGHIDEventTap, theEvent)

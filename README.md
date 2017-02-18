@@ -45,6 +45,10 @@ then a call to `openAndWait()` and the inputs. You can then run it with your pyt
 Sure, you can derive the movie duration from the delay parameters, or measure the time with Python time functions, but I found an external timer such as [Llanfair](http://jenmaarai.com/llanfair/) particularly useful, especially if you're streaming on Twitch.
 You can then assign F5 to start/split and F6 to reset in the config, then use `kPress("f5")` and `kPress("f6")` in your movie to automatically control the timer in your script, without any signifiant adverse effect to the timing.
 
+## N64 Controller
+
+Well, of course you can use the library for something else, like, I dunno [interfacing a Nintendo 64 controller](http://www.instructables.com/id/Use-an-Arduino-with-an-N64-controller/)? The `n64controller.py` script should work with this.
+
 ## Links
 
 [Forum thread](https://codewalr.us/index.php?topic=1676.0)
